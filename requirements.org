@@ -71,7 +71,7 @@
      
    - Marks will be deducted for using library code that does the assignment
    
-   - Marks can be deducated for egregious violation of requirements (e.g. hard
+   - Marks can be deducted for egregious violation of requirements (e.g. hard
      coding path names etc.).
 
 ** Marking

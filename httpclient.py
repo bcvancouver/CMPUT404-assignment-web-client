@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright 2016 Abram Hindle, https://github.com/tywtyw2002, and https://github.com/treedust
+# Copyright 2016 Abram Hindle, https://github.com/tywtyw2002, and https://github.com/treedust, Michael Xi
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,11 +18,7 @@
 # Write your own HTTP GET and POST
 # The point is to understand what you have to send and get experience with it
 
-import sys
-import socket
-import re
-# you may use urllib to encode data appropriately
-import urllib
+import sys, socket, re, urllib
 
 def help():
     print "httpclient.py [GET/POST] [URL]\n"
