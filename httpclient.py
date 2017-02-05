@@ -31,23 +31,29 @@ class URL(object):
         self.parse = urlparse(urlstr)
         self.root = self.get_root()
         # By default assign port 80
-        self.port = int(self.parse.port)
+        self.port = self.get_port()
         self.path = self.get_path()
         self.scheme = self.get_scheme()
 
-
     def get_scheme(self):
+        # Should return http
         return self.parse.scheme
 
-    def get_root(self):
-        temp = self.parse.netloc.split(":")
-        if len(temp[0]) != 0:
-            return temp[0]
+    def get_port(self):
+        if self.parse.port is not None:
+            return self.parse.port
         else:
             return 80
 
+    def get_root(self):
+        temp = self.parse.netloc.split(":")
+        if temp[0] is not None:
+            return temp[0]
+        else:
+            return
+
     def get_path(self):
-        if len(self.parse.path) != 0:
+        if self.parse.path is not None:
             return self.parse.path
         else:
             return "/"
@@ -75,7 +81,7 @@ class HTTPClient(object):
         code = int(data.split(" ")[1])
         return code
 
-    def get_headers(self,data):
+    def get_headers(self, data):
         return data.split("\r\n\r\n")[0]
 
     def get_body(self, data):
@@ -93,8 +99,13 @@ class HTTPClient(object):
                 done = not part
         return str(buffer)
 
+    def extra_request(self, encoded):
+        request = "content-type: application/x-www-form-urlencoded\r\n"
+        request += "content-length: " + str(len(encoded))+"\r\n"
+        request += encoded + "\r\n\r\n"
+        return request
+
     def GET(self, url, args=None):
-        body = ""
         localurl = URL(url)
         clientSocket = self.connect(localurl.root, localurl.port)
         request = "GET " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n\r\n"
@@ -105,8 +116,19 @@ class HTTPClient(object):
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
-        code = 404
-        body = ""
+        localurl = URL(url)
+        clientSocket = self.connect(localurl.root, localurl.port)
+        request = "POST " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n\r\n"
+        encoded = ""
+        if (args != None):
+            encoded = urllib.urlencode(args)
+        request += self.extra_request(encoded)
+        print request
+        clientSocket.sendall(request)
+        response = self.recvall(clientSocket)
+        print response
+        code = self.get_code(response)
+        body = self.get_body(response)
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
