@@ -18,3 +18,12 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
+Reference
+========================
+Python Documentation
+https://docs.python.org/2/library/urlparse.html#urlparse.urlparse  
+https://docs.python.org/2/library/urllib.html#urllib.urlencode  
+Stackoverflow
+http://stackoverflow.com/questions/14551194/how-are-parameters-sent-in-an-http-post-request
+CMPUT404 Lab 2
+https://github.com/bcvancouver/cmput404w17lab2/blob/master/client.py  

@@ -21,15 +21,17 @@
 import sys, socket, re, urllib
 from urlparse import urlparse
 
+
 def help():
     print "httpclient.py [GET/POST] [URL]\n"
 
 
+# Class implemented to parse given url
 class URL(object):
     def __init__(self, urlstr):
         # https://docs.python.org/2/library/urlparse.html#urlparse.urlparse
         self.parse = urlparse(urlstr)
-        self.root = self.get_root()
+        self.hostname = self.get_hostname()
         # By default assign port 80
         self.port = self.get_port()
         self.path = self.get_path()
@@ -45,7 +47,7 @@ class URL(object):
         else:
             return 80
 
-    def get_root(self):
+    def get_hostname(self):
         temp = self.parse.netloc.split(":")
         if temp[0] is not None:
             return temp[0]
@@ -66,12 +68,12 @@ class HTTPResponse(object):
 
 
 class HTTPClient(object):
-    #def get_host_port(self,url):
 
     def connect(self, host, port):
         # use sockets!
         clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Copied and modified from lab 2
+        # https://github.com/bcvancouver/cmput404w17lab2/blob/master/client.py
         # socket.AF_INET indicates that we want an IPv4 socket
         # socket.SOCK_STREAM indicates that we want a TCP socket
         clientSocket.connect((host, port))
@@ -99,6 +101,7 @@ class HTTPClient(object):
                 done = not part
         return str(buffer)
 
+    # Answered by Joe Alfano (http://stackoverflow.com/users/1139127/joe-alfano) on Stackoverflow
     # http://stackoverflow.com/questions/14551194/how-are-parameters-sent-in-an-http-post-request
     def extra_request(self, encoded):
         request = "Content-Type: application/x-www-form-urlencoded\r\n"
@@ -110,8 +113,8 @@ class HTTPClient(object):
 
     def GET(self, url, args=None):
         localurl = URL(url)
-        request = "GET " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n\r\n"
-        clientSocket = self.connect(localurl.root, localurl.port)
+        request = "GET " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.hostname + "\r\n\r\n"
+        clientSocket = self.connect(localurl.hostname, localurl.port)
         clientSocket.sendall(request)
         response = self.recvall(clientSocket)
         code = self.get_code(response)
@@ -119,14 +122,14 @@ class HTTPClient(object):
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
-
         localurl = URL(url)
-        request = "POST " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n"
+        request = "POST " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.hostname + "\r\n"
         encoded = ""
         if (args != None):
+            # https://docs.python.org/2/library/urllib.html#urllib.urlencode
             encoded = urllib.urlencode(args)
         request += self.extra_request(encoded)
-        clientSocket = self.connect(localurl.root, localurl.port)
+        clientSocket = self.connect(localurl.hostname, localurl.port)
         clientSocket.sendall(request)
         response = self.recvall(clientSocket)
         code = self.get_code(response)
