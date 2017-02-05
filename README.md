@@ -24,6 +24,6 @@ Python Documentation
 https://docs.python.org/2/library/urlparse.html#urlparse.urlparse  
 https://docs.python.org/2/library/urllib.html#urllib.urlencode  
 Stackoverflow
-http://stackoverflow.com/questions/14551194/how-are-parameters-sent-in-an-http-post-request
+http://stackoverflow.com/questions/14551194/how-are-parameters-sent-in-an-http-post-request  
 CMPUT404 Lab 2
 https://github.com/bcvancouver/cmput404w17lab2/blob/master/client.py  
