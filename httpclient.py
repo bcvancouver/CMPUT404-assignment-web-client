@@ -99,16 +99,19 @@ class HTTPClient(object):
                 done = not part
         return str(buffer)
 
+    # http://stackoverflow.com/questions/14551194/how-are-parameters-sent-in-an-http-post-request
     def extra_request(self, encoded):
-        request = "content-type: application/x-www-form-urlencoded\r\n"
-        request += "content-length: " + str(len(encoded))+"\r\n"
+        request = "Content-Type: application/x-www-form-urlencoded\r\n"
+        # Need a new line to indicate end of header
+        request += "Content-Length: " + str(len(encoded))+"\r\n\r\n"
+        # Need a new line to indicate end of request body, otherwise test will stuck.
         request += encoded + "\r\n\r\n"
         return request
 
     def GET(self, url, args=None):
         localurl = URL(url)
-        clientSocket = self.connect(localurl.root, localurl.port)
         request = "GET " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n\r\n"
+        clientSocket = self.connect(localurl.root, localurl.port)
         clientSocket.sendall(request)
         response = self.recvall(clientSocket)
         code = self.get_code(response)
@@ -116,17 +119,16 @@ class HTTPClient(object):
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
+
         localurl = URL(url)
-        clientSocket = self.connect(localurl.root, localurl.port)
-        request = "POST " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n\r\n"
+        request = "POST " + localurl.path + " HTTP/1.1\r\nHost: " + localurl.root + "\r\n"
         encoded = ""
         if (args != None):
             encoded = urllib.urlencode(args)
         request += self.extra_request(encoded)
-        print request
+        clientSocket = self.connect(localurl.root, localurl.port)
         clientSocket.sendall(request)
         response = self.recvall(clientSocket)
-        print response
         code = self.get_code(response)
         body = self.get_body(response)
         return HTTPResponse(code, body)
